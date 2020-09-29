@@ -1,0 +1,21 @@
+name: OCR CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    - cron: "0 16 * * 0-6"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: cd ocr
+      run: cd ocr
+    - name: make check
+      run: make check
