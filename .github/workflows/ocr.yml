@@ -15,5 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: cd ocr
+      run: cd ocr
     - name: make check
       run: make check
