@@ -1,6 +1,5 @@
 <h1 align="center">
-    <br>
-    	Ninshiki OCR
+    Ninshiki OCR
     <br>
 </h1>
 
