@@ -1,0 +1,17 @@
+﻿---
+BasedOnStyle: Google
+AlignAfterOpenBracket: Align
+AlignConsecutiveMacros: 'true'
+AlignOperands: 'true'
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: WithoutElse
+ColumnLimit: '80'
+ConstructorInitializerIndentWidth: '4'
+ContinuationIndentWidth: '4'
+IndentWidth: '4'
+Language: Cpp
+PointerAlignment: Right
+SpaceAfterCStyleCast: 'true'
+UseTab: Never
+
+...
