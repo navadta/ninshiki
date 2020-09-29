@@ -1,0 +1,3 @@
+# Ninshiki Makefile
+# TODO
+
