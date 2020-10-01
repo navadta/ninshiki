@@ -10,6 +10,7 @@ ConstructorInitializerIndentWidth: '4'
 ContinuationIndentWidth: '4'
 IndentWidth: '4'
 Language: Cpp
+DerivePointerAlignment: false
 PointerAlignment: Right
 SpaceAfterCStyleCast: 'true'
 UseTab: Never
