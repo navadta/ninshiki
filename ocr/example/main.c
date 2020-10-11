@@ -1,10 +1,8 @@
 #include <stdio.h>
 
-#include "error.h"
+#include "utils/error.h"
 
 int main() {
-    char buffer[100];
-    format_last_error(SUCCESS, buffer);
-    printf("%s", buffer);
+    printf("%s\n", format_last_error(SUCCESS));
     return 0;
 }
