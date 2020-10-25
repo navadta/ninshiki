@@ -1,7 +1,7 @@
 # OCR Makefile
 NAME := ocr
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c99 -O3
+CFLAGS := -Werror -Wall -Wextra -std=c99 -O3
 LDFLAGS := -Iinclude/ -lm
 C_SRC := $(shell find src/ -name *.c -printf "%P\n")
 SRC := $(shell find -name *.c) $(shell find -name *.h)
