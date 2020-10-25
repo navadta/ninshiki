@@ -1,6 +1,17 @@
 #ifndef H_ERROR
 #define H_ERROR
 
+#define err_throw_msg(e, err, message)      \
+    e = err;                                \
+    if (e) {                                \
+        set_last_error_message(e, message); \
+        return e;                           \
+    }
+
+#define err_throw(e, err) \
+    e = err;              \
+    if (e) return e;
+
 typedef enum error {
     SUCCESS,
     NOT_FOUND,

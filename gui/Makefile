@@ -3,5 +3,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
 
-# TODO
+all:
 
+clean:
+
+mrproper:

@@ -10,6 +10,9 @@ typedef struct image {
     COLORS pixels;
 } IMAGE;
 
+IMAGE *image_init(unsigned int width, unsigned int height, TYPE type);
+void image_free(IMAGE *image);
+
 ERROR load_bitmap(const char *path, IMAGE **image);
 
 ERROR save_to_bitmap(IMAGE *image, const char *path);
@@ -18,8 +21,8 @@ ERROR get_pixel(IMAGE *image, unsigned int x, unsigned int y, COLORS *color);
 
 ERROR set_pixel(IMAGE *image, unsigned int x, unsigned int y, COLORS color);
 
-ERROR clone(IMAGE *image, IMAGE **cloned);
+ERROR image_clone(IMAGE *image, IMAGE **cloned);
 
-ERROR invert(IMAGE *image);
+ERROR image_invert(IMAGE *image);
 
 #endif

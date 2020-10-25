@@ -4,6 +4,6 @@
 #ifndef H_CONVOLUTION
 #define H_CONVOLUTION
 
-ERROR convolve(IMAGE *image, unsigned int n, float *mask);
+ERROR convolve(IMAGE *image, unsigned int n, float mask[n][n]);
 
 #endif
