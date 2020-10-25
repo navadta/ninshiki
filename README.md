@@ -3,14 +3,38 @@
     <br>
 </h1>
 
-A basic Optical Character Recognition program written in C
+A basic Optical Character Recognition program written in C for the third semester of EPITA.
 
+***
 
-# Navadta Members:
-###### - [Alan GUERET](https://github.com/alanretgue)
-###### - [Theo DARONAT](https://github.com/Theo-DARONAT)
-###### - [Adam THIBERT](https://github.com/Adamaq01)
-###### - [Louis D'HOLLANDE](https://github.com/Krug666)
+## Build
+* `git clone https://github.com/navadta/ninshiki`
+* `make`
+* All of the executable demo files will be in `./ocr/build/example/`
+
+## Demos
+* Images
+  * This demo will produce a grayscaled and a binarized version of the input image
+  * Several images are available in the `./resources` path
+  * Run `./ocr/build/example/images path image_file` (`./ocr/build/example/images ./resources snoopy.bmp`)
+* Segmentation
+  * This demo will produce an image with characters, words and lines underlined
+  * An example text image is available in `./resources/text.bmp`
+  * `./ocr/build/example/segmentation path image_file` (`./ocr/build/example/segmentation ./resources text.bmp`)
+* XOR Neural Network
+  * This demo will train a neural network to learn the Bitwise XOR function then it will output some results
+  * `./ocr/build/example/xor_network activation_function` (`./ocr/build/example/xor_network 1`)
+  * `1` to use the Sigmoid activation function and `2` for ELU (Exponential Linear Unit)
+
+***
+
+## Navadta Members:
+##### - [Alan GUERET](https://github.com/alanretgue)
+##### - [Theo DARONAT](https://github.com/Theo-DARONAT)
+##### - [Adam THIBERT](https://github.com/Adamaq01)
+##### - [Louis D'HOLLANDE](https://github.com/Krug666)
+
+***
 
 ## License
 
