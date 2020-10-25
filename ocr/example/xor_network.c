@@ -82,7 +82,7 @@ ERROR program(unsigned long activation) {
     printf("Training...\n\n");
     double alpha = 1.0;
     err_throw(err, network_train(&network, (void *) &alpha, (void *) &alpha,
-                                 5000, 0.5, .0, 32, 4, inputs, expected));
+                                 10000, 0.5, .0, 32, 4, inputs, expected));
 
     MATRIX *output = malloc(sizeof(MATRIX));
     for (unsigned int j = 0; j < 4; j++) {
