@@ -5,8 +5,6 @@
 
 A basic Optical Character Recognition program written in C for the third semester of EPITA.
 
-***
-
 ## Build
 * `git clone https://github.com/navadta/ninshiki`
 * `make`
@@ -26,15 +24,11 @@ A basic Optical Character Recognition program written in C for the third semeste
   * `./ocr/build/example/xor_network activation_function` (`./ocr/build/example/xor_network 1`)
   * `1` to use the Sigmoid activation function and `2` for ELU (Exponential Linear Unit)
 
-***
-
 ## Navadta Members:
 ##### - [Alan GUERET](https://github.com/alanretgue)
 ##### - [Theo DARONAT](https://github.com/Theo-DARONAT)
 ##### - [Adam THIBERT](https://github.com/Adamaq01)
 ##### - [Louis D'HOLLANDE](https://github.com/Krug666)
-
-***
 
 ## License
 
