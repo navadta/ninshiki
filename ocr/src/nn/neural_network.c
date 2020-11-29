@@ -86,6 +86,24 @@ int network_save(FILE *file, NETWORK *network) {
     return 0;
 }
 
+// Load a layer from a file
+ERROR layer_load(FILE *file, LAYER *layer) {
+    MATRIX *weights = malloc(sizeof(MATRIX));
+    MATRIX *bias = malloc(sizeof(MATRIX));
+
+    ERROR err = matrix_load(file, weights);
+    if (err) return err;
+
+    err = matrix_load(file, bias);
+    if (err) return err;
+
+    layer->inputs = weights->columns;
+    layer->outputs = weights->rows;
+    layer->weights = weights;
+    layer->bias = bias;
+    return SUCCESS;
+}
+
 ERROR layer_feedforward(NETWORK *network, void *context, MATRIX *input,
                         LAYER *current) {
     ERROR err = SUCCESS;

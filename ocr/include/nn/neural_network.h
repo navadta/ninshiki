@@ -33,6 +33,8 @@ void layer_free(LAYER *layer);
 
 int layer_save(FILE *file, LAYER *layer);
 
+ERROR layer_load(FILE *file, LAYER *layer);
+
 ERROR network_init(NETWORK *network, LAYER *layers, unsigned int layers_count,
                    double (*activation_function)(void *, double),
                    double (*activation_function_derivative)(void *, double));

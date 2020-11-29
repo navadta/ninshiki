@@ -46,11 +46,9 @@ unsigned int matrix_size(MATRIX *matrix) {
 }
 
 ERROR matrix_clone(MATRIX *dest, MATRIX *source) {
-    // printf("INSHALLAH %u\n", source->rows);
     matrix_init(dest, source->rows, source->columns, NULL, NULL);
     for (unsigned int i = 0; i < matrix_size(source); i++)
         dest->values[i] = source->values[i];
-    // printf("SOURCE SIZE: (%u, %u)\n", source->rows, source->columns);
     return SUCCESS;
 }
 
@@ -203,19 +201,22 @@ int matrix_save(FILE *file, MATRIX *matrix) {
     return 0;
 }
 
-/*int matrix_load(FILE *file, MATRIX *matrix) {
+ERROR matrix_load(FILE *file, MATRIX *matrix) {
     unsigned int rows;
     unsigned int columns;
-    fscanf(file, "%u,%u", rows, columns);
-    matrix_init(matrix, rows, columns, NULL, NULL);
-    unsigned int *number;
-    unsigned int current = fgetc(file);
+    if (fscanf(file, "%u,%u,[", &rows, &columns) == 0) return IO_ERROR;
+    ERROR err = matrix_init(matrix, rows, columns, NULL, NULL);
+    if (err) return err;
+    // unsigned int *number;
+    // unsigned int current = fgetc(file);
 
-    while (current != '['){
-       current = fgetc(file);
+    unsigned int i = 0;
+    while (i != rows * columns - 1) {
+        // current = fgetc(file);
+        if (fscanf(file, "%lf,", matrix->values + i) == 0) return IO_ERROR;
+        i++;
     }
 
-
-    return 0;
+    if (fscanf(file, "%lf]", matrix->values + i) == 0) return IO_ERROR;
+    return SUCCESS;
 }
-*/

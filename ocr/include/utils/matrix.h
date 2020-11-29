@@ -39,5 +39,5 @@ void matrix_apply(MATRIX *matrix, double (*function)(void *context, double),
                   void *context);
 
 int matrix_save(FILE *file, MATRIX *matrix);
-
+ERROR matrix_load(FILE *file, MATRIX *matrix);
 #endif

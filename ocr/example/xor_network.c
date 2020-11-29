@@ -86,6 +86,7 @@ ERROR program(unsigned long activation) {
 
     MATRIX *output = malloc(sizeof(MATRIX));
     for (unsigned int j = 0; j < 4; j++) {
+        if (j > 0) matrix_free(output);
         network_feedforward(&network, (void *) &alpha, inputs + j, output);
         unsigned int result = matrix_get(output, 0, 0) >= 0.5 ? 1 : 0;
         printf("INPUT: [%f, %f]\nEXPECTED: %u\nOUTPUT: %u (real %f)\n\n",
@@ -98,6 +99,25 @@ ERROR program(unsigned long activation) {
     network_save(before, &network);
     fclose(before);
 
+    FILE *test = fopen("layer.txt", "a");
+    layer_save(test, network.layers);
+    fclose(test);
+
+    LAYER load;
+    test = fopen("layer.txt", "r");
+    layer_load(test, &load);
+    fclose(test);
+    printf("w rows = %u, w columns = %u\n", load.weights->rows,
+           load.weights->columns);
+    test = fopen("layer_out.txt", "w");
+    printf("w rows = %u, w columns = %u\n", load.weights->rows,
+           load.weights->columns);
+    layer_save(test, &load);
+    fclose(test);
+
+    layer_free(&load);
+
+    matrix_free(output);
     free(output);
 
     for (unsigned int i = 0; i < 4; i++) {
@@ -109,6 +129,7 @@ ERROR program(unsigned long activation) {
     free(expected);
 
     network_free(&network);
+    free(network.layers);
 
     return err;
 }
