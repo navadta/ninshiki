@@ -42,6 +42,8 @@ void network_free(NETWORK *network);
 
 int network_save(FILE *file, NETWORK *network);
 
+ERROR network_load(FILE *file, NETWORK *network);
+
 ERROR network_feedforward(NETWORK *network, void *context, MATRIX *input,
                           MATRIX *output);
 

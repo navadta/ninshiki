@@ -104,18 +104,29 @@ ERROR program(unsigned long activation) {
     fclose(test);
 
     LAYER load;
+
     test = fopen("layer.txt", "r");
     layer_load(test, &load);
     fclose(test);
-    printf("w rows = %u, w columns = %u\n", load.weights->rows,
-           load.weights->columns);
+
     test = fopen("layer_out.txt", "w");
-    printf("w rows = %u, w columns = %u\n", load.weights->rows,
-           load.weights->columns);
     layer_save(test, &load);
     fclose(test);
 
     layer_free(&load);
+
+    NETWORK load_net;
+
+    test = fopen("network.txt", "r");
+    network_load(test, &load_net);
+    fclose(test);
+
+    test = fopen("network_out.txt", "w");
+    network_save(test, &load_net);
+    fclose(test);
+
+    network_free(&load_net);
+    free(load_net.layers);
 
     matrix_free(output);
     free(output);

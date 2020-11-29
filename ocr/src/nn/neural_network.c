@@ -103,6 +103,19 @@ ERROR layer_load(FILE *file, LAYER *layer) {
     layer->bias = bias;
     return SUCCESS;
 }
+// load network witout activation function
+ERROR network_load(FILE *file, NETWORK *network) {
+    unsigned int layer_count = 0;
+    if (fscanf(file, "%u", &layer_count) == 0) return IO_ERROR;
+
+    LAYER *layers = malloc(layer_count * sizeof(LAYER));
+    for (unsigned int i = 0; i < layer_count; i++) {
+        ERROR err = layer_load(file, layers + i);
+        if (err) return err;
+    }
+
+    return network_init(network, layers, layer_count, NULL, NULL);
+}
 
 ERROR layer_feedforward(NETWORK *network, void *context, MATRIX *input,
                         LAYER *current) {
