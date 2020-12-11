@@ -6,6 +6,7 @@
 
 #define PI 3.141592
 
-ERROR rotate(IMAGE *image, float angle);
+double image_skew_angle(IMAGE *image);
+ERROR image_rotate(IMAGE *image, double angle);
 
 #endif

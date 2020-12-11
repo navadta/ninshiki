@@ -7,6 +7,7 @@
 #include "images/conversions.h"
 #include "images/convolution.h"
 #include "images/image.h"
+#include "images/transformations.h"
 #include "utils/error.h"
 #include "utils/utils.h"
 
@@ -147,8 +148,26 @@ ERROR program(const char *path, const char *name) {
     IMAGE *image;
     err_throw(err, load_bitmap(concat2(path, name), &image));
 
+    float blur[3][3] = {{1.f / 9.f, 1.f / 9.f, 1.f / 9.f},
+                        {1.f / 9.f, 1.f / 9.f, 1.f / 9.f},
+                        {1.f / 9.f, 1.f / 9.f, 1.f / 9.f}};
+    float sharpen[3][3] = {
+        {0.f, -1.f, 0.f}, {-1.f, 5.f, -1.f}, {0.f, -1.f, 0.f}};
+    float gaussian_blur[3][3] = {{1.f / 16.f, 2.f / 16.f, 1.f / 16.f},
+                                 {2.f / 16.f, 4.f / 16.f, 1.f / 16.f},
+                                 {1.f / 16.f, 2.f / 16.f, 1.f / 16.f}};
+
+    double angle = image_skew_angle(image);
+    printf("Skew angle: %f\n", angle);
+    image_rotate(image, -angle);
+
     IMAGE *cloned;
     err_throw(err, image_clone(image, &cloned));
+
+    err_throw(err, convolve(image, 3, blur));
+    err_throw(err, convolve(image, 3, sharpen));
+    err_throw(err, convolve(image, 3, blur));
+    err_throw(err, convolve(image, 3, gaussian_blur));
 
     float thresh = compute_otsus_threshold(image);
 
