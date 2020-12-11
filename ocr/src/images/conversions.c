@@ -33,9 +33,8 @@ ERROR image_to_grayscale(IMAGE *image) {
                 grayscale = 0.f;
                 break;
         }
-        pixels[i].grayscale = grayscale < 0.f   ? 0.f
-                              : grayscale > 1.f ? 1.f
-                                                : grayscale;
+        pixels[i].grayscale =
+            grayscale < 0.f ? 0.f : grayscale > 1.f ? 1.f : grayscale;
     }
 
     switch (image->type) {
