@@ -314,3 +314,23 @@ ERROR image_invert(IMAGE *image) {
 
     return SUCCESS;
 }
+
+unsigned char is_white_pixel(IMAGE *image, int x, int y) {
+    int index = y * image->width + x;
+    switch (image->type) {
+        case COLOR_RGB:
+            return (image->pixels.rgb + index)->red == 255 &&
+                   (image->pixels.rgb + index)->green == 255 &&
+                   (image->pixels.rgb + index)->blue == 255;
+        case COLOR_RGBA:
+            return (image->pixels.rgba + index)->red == 255 &&
+                   (image->pixels.rgba + index)->green == 255 &&
+                   (image->pixels.rgba + index)->blue == 255;
+        case COLOR_GRAYSCALE:
+            return (image->pixels.grayscale + index)->grayscale == 1.0f;
+        case COLOR_BINARY:
+            return (image->pixels.binary + index)->binary == 1;
+        default:
+            return 1;
+    }
+}
