@@ -25,4 +25,6 @@ ERROR image_clone(IMAGE *image, IMAGE **cloned);
 
 ERROR image_invert(IMAGE *image);
 
+unsigned char is_white_pixel(IMAGE *image, int x, int y);
+
 #endif
