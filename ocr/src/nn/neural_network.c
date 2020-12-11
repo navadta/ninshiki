@@ -86,6 +86,37 @@ int network_save(FILE *file, NETWORK *network) {
     return 0;
 }
 
+// Load a layer from a file
+ERROR layer_load(FILE *file, LAYER *layer) {
+    MATRIX *weights = malloc(sizeof(MATRIX));
+    MATRIX *bias = malloc(sizeof(MATRIX));
+
+    ERROR err = matrix_load(file, weights);
+    if (err) return err;
+
+    err = matrix_load(file, bias);
+    if (err) return err;
+
+    layer->inputs = weights->columns;
+    layer->outputs = weights->rows;
+    layer->weights = weights;
+    layer->bias = bias;
+    return SUCCESS;
+}
+// load network witout activation function
+ERROR network_load(FILE *file, NETWORK *network) {
+    unsigned int layer_count = 0;
+    if (fscanf(file, "%u", &layer_count) == 0) return IO_ERROR;
+
+    LAYER *layers = malloc(layer_count * sizeof(LAYER));
+    for (unsigned int i = 0; i < layer_count; i++) {
+        ERROR err = layer_load(file, layers + i);
+        if (err) return err;
+    }
+
+    return network_init(network, layers, layer_count, NULL, NULL);
+}
+
 ERROR layer_feedforward(NETWORK *network, void *context, MATRIX *input,
                         LAYER *current) {
     ERROR err = SUCCESS;
