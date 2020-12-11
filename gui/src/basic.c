@@ -2,6 +2,7 @@
 
 #include <gtk/gtk.h>
 #include <images/image.h>
+#include <images/transformations.h>
 #include <math.h>
 #include <nn/neural_network.h>
 #include <nn/training.h>
@@ -56,16 +57,6 @@ void select_image(GtkButton *button, gpointer user_data) {
     if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
         char *filename =
             gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
-        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(filename, NULL);
-        if (pixbuf == NULL) {
-            gtk_widget_destroy(dialog);
-            display_error(app, "Failed to load image",
-                          "Try with another iamge");
-            return;
-        }
-        pixbuf = gdk_pixbuf_scale_simple(pixbuf, app->ui.image_x,
-                                         app->ui.image_y, GDK_INTERP_BILINEAR);
-        gtk_image_set_from_pixbuf(app->ui.image_panel, pixbuf);
 
         if (app->image != NULL) image_free(app->image);
         ERROR err = image_load(&(app->image), filename);
@@ -75,6 +66,22 @@ void select_image(GtkButton *button, gpointer user_data) {
                           "Try with another iamge");
             return;
         }
+
+        double angle = image_skew_angle(app->image);
+        gtk_range_set_value((GtkRange *) app->ui.rotation_scale, (int) angle);
+
+        IMAGE *clone;
+        image_clone(app->image, &clone);
+
+        if (image_rotate(clone, (double) -angle)) return;
+
+        GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
+            (const guchar *) clone->pixels.rgb, GDK_COLORSPACE_RGB, FALSE, 8,
+            clone->width, clone->height, clone->width * 3, NULL, NULL);
+        pixbuf = gdk_pixbuf_scale_simple(pixbuf, app->ui.image_x,
+                                         app->ui.image_y, GDK_INTERP_BILINEAR);
+        gtk_image_set_from_pixbuf(app->ui.image_panel, pixbuf);
+        image_free(clone);
     }
 
     gtk_widget_destroy(dialog);
@@ -143,16 +150,19 @@ void rotate(GtkButton *button, gpointer user_data) {
     App *app = user_data;
     if (app->image == NULL) return;
 
-    // int angle = gtk_range_get_value((GtkRange *) app->ui.rotation_scale);
-    // TODO appeler la fonction rotate avec la valeur de ui.rotation
-    // TODO en cas de pb avec l'image, passer une copie de l'image à pixbuf
+    int angle = gtk_range_get_value((GtkRange *) app->ui.rotation_scale);
+    IMAGE *clone;
+    image_clone(app->image, &clone);
+
+    if (image_rotate(clone, (double) -angle)) return;
+
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
-        (const guchar *) app->image->pixels.rgb, GDK_COLORSPACE_RGB, FALSE, 8,
-        app->image->width, app->image->height, app->image->width * 3, NULL,
-        NULL);
+        (const guchar *) clone->pixels.rgb, GDK_COLORSPACE_RGB, FALSE, 8,
+        clone->width, clone->height, clone->width * 3, NULL, NULL);
     pixbuf = gdk_pixbuf_scale_simple(pixbuf, app->ui.image_x, app->ui.image_y,
                                      GDK_INTERP_BILINEAR);
     gtk_image_set_from_pixbuf(app->ui.image_panel, pixbuf);
+    image_free(clone);
 }
 
 void train_network(GtkButton *button, gpointer user_data) {
