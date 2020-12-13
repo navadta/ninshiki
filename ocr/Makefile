@@ -35,7 +35,7 @@ $(BUILD_DIR)/$(SANDBOX_DIR)/%.o: $(SRC_DIR)/%.c
 
 $(EXAMPLES): compile
 	mkdir -p $(BUILD_DIR)/$(EXAMPLE_DIR)
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/$(EXAMPLE_DIR)/$(@:.c=) $(EXAMPLE_DIR)/$@ $(LDFLAGS) -L$(BUILD_DIR) -l$(NAME)
+	$(CC) $(CFLAGS) `pkg-config --cflags gtk+-3.0` -o $(BUILD_DIR)/$(EXAMPLE_DIR)/$(@:.c=) $(EXAMPLE_DIR)/$@ $(LDFLAGS) `pkg-config --libs gtk+-3.0` -L$(BUILD_DIR) -l$(NAME)
 
 mrproper:
 	rm -rf $(BUILD_DIR)

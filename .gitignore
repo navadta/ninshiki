@@ -57,3 +57,4 @@ build/
 *.bmp
 !resources/*
 other/
+dataset/

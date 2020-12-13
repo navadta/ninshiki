@@ -283,6 +283,7 @@ ERROR network_train(NETWORK *network, void *context, void *derivative_context,
                                            derivative_context, learning_rate,
                                            regularization_rate, batch_size,
                                            inputs_count, inputs, expected));
+        printf("Finished epoch %d\n", epoch + 1);
     }
 
     // Free our training layers
