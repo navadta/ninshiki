@@ -12,17 +12,17 @@
 ERROR network_create(NETWORK *network,
                      double (*activation_function)(void *, double),
                      double (*activation_function_derivative)(void *, double)) {
-    LAYER *layers = malloc(4 * sizeof(LAYER));
+    LAYER *layers = malloc(3 * sizeof(LAYER));
 
     layer_init_random(layers, 2, 2);
     layer_init_random(layers + 1, 2, 2);
     layer_init_random(layers + 2, 2, 2);
-    layer_init_random(layers + 3, 2, 1);
 
-    network_init(network, layers, 4, activation_function,
+    network_init(network, layers, 3, activation_function,
                  activation_function_derivative);
     return SUCCESS;
 }
+
 double elu(void *context, double value) {
     double alpha = *((double *) context);
     return value >= 0 ? value : alpha * (exp(value) - 1);
@@ -70,14 +70,18 @@ ERROR program(unsigned long activation) {
     matrix_set(&inputs[3], 1, 0, 1.0);
 
     MATRIX *expected = malloc(4 * sizeof(MATRIX));
-    matrix_init(expected + 0, 1, 1, NULL, NULL);
-    matrix_init(expected + 1, 1, 1, NULL, NULL);
-    matrix_init(expected + 2, 1, 1, NULL, NULL);
-    matrix_init(expected + 3, 1, 1, NULL, NULL);
+    matrix_init(expected + 0, 2, 1, NULL, NULL);
+    matrix_init(expected + 1, 2, 1, NULL, NULL);
+    matrix_init(expected + 2, 2, 1, NULL, NULL);
+    matrix_init(expected + 3, 2, 1, NULL, NULL);
     matrix_set(&expected[0], 0, 0, 0.0);
+    matrix_set(&expected[0], 1, 0, 1.0);
     matrix_set(&expected[1], 0, 0, 1.0);
+    matrix_set(&expected[1], 1, 0, 0.0);
     matrix_set(&expected[2], 0, 0, 1.0);
+    matrix_set(&expected[2], 1, 0, 0.0);
     matrix_set(&expected[3], 0, 0, 0.0);
+    matrix_set(&expected[3], 1, 0, 1.0);
 
     printf("Training...\n\n");
     double alpha = 1.0;
@@ -88,11 +92,20 @@ ERROR program(unsigned long activation) {
     for (unsigned int j = 0; j < 4; j++) {
         if (j > 0) matrix_free(output);
         network_feedforward(&network, (void *) &alpha, inputs + j, output);
-        unsigned int result = matrix_get(output, 0, 0) >= 0.5 ? 1 : 0;
-        printf("INPUT: [%f, %f]\nEXPECTED: %u\nOUTPUT: %u (real %f)\n\n",
-               matrix_get(inputs + j, 0, 0), matrix_get(inputs + j, 1, 0),
-               (unsigned int) matrix_get(expected + j, 0, 0), result,
-               matrix_get(output, 0, 0));
+
+        double eone = matrix_get(expected + j, 0, 0);
+        double ezero = matrix_get(expected + j, 1, 0);
+        unsigned int eresult = eone > ezero;
+
+        double one = matrix_get(output, 0, 0);
+        double zero = matrix_get(output, 1, 0);
+        unsigned int result = one > zero;
+
+        printf(
+            "INPUT: [%f, %f]\nEXPECTED: %u (real [%f, %f])\nOUTPUT: %u (real "
+            "[%f, %f])\n\n",
+            matrix_get(inputs + j, 0, 0), matrix_get(inputs + j, 1, 0), eresult,
+            eone, ezero, result, one, zero);
     }
 
     FILE *before = fopen("network.txt", "a");

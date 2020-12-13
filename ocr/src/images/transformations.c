@@ -189,3 +189,141 @@ ERROR image_rotate(IMAGE *image, double angle) {
 
     return SUCCESS;
 }
+
+ERROR image_scale(IMAGE *image, unsigned int width, unsigned int height) {
+    COLORS colors;
+    colors.rgb = NULL;
+    colors.rgba = NULL;
+    colors.grayscale = NULL;
+    colors.binary = NULL;
+    switch (image->type) {
+        case COLOR_RGB:
+            colors.rgb = malloc(width * height * sizeof(RGB));
+            break;
+        case COLOR_RGBA:
+            colors.rgba = malloc(width * height * sizeof(RGBA));
+            break;
+        case COLOR_GRAYSCALE:;
+            colors.grayscale = malloc(width * height * sizeof(GRAYSCALE));
+            break;
+        case COLOR_BINARY:;
+            colors.binary = malloc(width * height * sizeof(BINARY));
+            break;
+        default:
+            break;
+    }
+
+    double width_factor = (double) image->width / (double) width;
+    double height_factor = (double) image->height / (double) height;
+
+    for (unsigned int y = 0; y < height; y++) {
+        for (unsigned int x = 0; x < width; x++) {
+            unsigned int old_index =
+                ((unsigned int) (y * height_factor)) * image->width +
+                ((unsigned int) (x * width_factor));
+            unsigned int index = y * width + x;
+
+            switch (image->type) {
+                case COLOR_RGB:
+                    (colors.rgb + index)->red =
+                        (image->pixels.rgb + old_index)->red;
+                    (colors.rgb + index)->green =
+                        (image->pixels.rgb + old_index)->green;
+                    (colors.rgb + index)->blue =
+                        (image->pixels.rgb + old_index)->blue;
+                    break;
+                case COLOR_RGBA:
+                    (colors.rgba + index)->red =
+                        (image->pixels.rgba + old_index)->red;
+                    (colors.rgba + index)->green =
+                        (image->pixels.rgba + old_index)->green;
+                    (colors.rgba + index)->blue =
+                        (image->pixels.rgba + old_index)->blue;
+                    (colors.rgba + index)->alpha =
+                        (image->pixels.rgba + old_index)->alpha;
+                    break;
+                case COLOR_GRAYSCALE:
+                    (colors.grayscale + index)->grayscale =
+                        (image->pixels.grayscale + old_index)->grayscale;
+                    break;
+                case COLOR_BINARY:
+                    (colors.binary + index)->binary =
+                        (image->pixels.binary + old_index)->binary;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    image->width = width;
+    image->height = height;
+
+    switch (image->type) {
+        case COLOR_RGB:
+            free(image->pixels.rgb);
+            image->pixels.rgb = colors.rgb;
+            break;
+        case COLOR_RGBA:
+            free(image->pixels.rgba);
+            image->pixels.rgba = colors.rgba;
+            break;
+        case COLOR_GRAYSCALE:
+            free(image->pixels.grayscale);
+            image->pixels.grayscale = colors.grayscale;
+            break;
+        case COLOR_BINARY:
+            free(image->pixels.binary);
+            image->pixels.binary = colors.binary;
+            break;
+        default:
+            break;
+    }
+
+    return SUCCESS;
+}
+
+ERROR image_sub(IMAGE *image, IMAGE **sub, unsigned int x, unsigned int y,
+                unsigned int width, unsigned int height) {
+    *sub = image_init(width, height, image->type);
+
+    for (unsigned int j = 0; j < height; j++) {
+        for (unsigned int i = 0; i < width; i++) {
+            unsigned int old_index = (y + j) * image->width + (x + i);
+            unsigned int index = j * width + i;
+
+            switch (image->type) {
+                case COLOR_RGB:
+                    ((*sub)->pixels.rgb + index)->red =
+                        (image->pixels.rgb + old_index)->red;
+                    ((*sub)->pixels.rgb + index)->green =
+                        (image->pixels.rgb + old_index)->green;
+                    ((*sub)->pixels.rgb + index)->blue =
+                        (image->pixels.rgb + old_index)->blue;
+                    break;
+                case COLOR_RGBA:
+                    ((*sub)->pixels.rgba + index)->red =
+                        (image->pixels.rgba + old_index)->red;
+                    ((*sub)->pixels.rgba + index)->green =
+                        (image->pixels.rgba + old_index)->green;
+                    ((*sub)->pixels.rgba + index)->blue =
+                        (image->pixels.rgba + old_index)->blue;
+                    ((*sub)->pixels.rgba + index)->alpha =
+                        (image->pixels.rgba + old_index)->alpha;
+                    break;
+                case COLOR_GRAYSCALE:
+                    ((*sub)->pixels.grayscale + index)->grayscale =
+                        (image->pixels.grayscale + old_index)->grayscale;
+                    break;
+                case COLOR_BINARY:
+                    ((*sub)->pixels.binary + index)->binary =
+                        (image->pixels.binary + old_index)->binary;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    return SUCCESS;
+}

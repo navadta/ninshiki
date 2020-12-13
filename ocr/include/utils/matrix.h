@@ -25,6 +25,8 @@ ERROR matrix_clone(MATRIX *dest, MATRIX *source);
 double matrix_get(MATRIX *matrix, unsigned int row, unsigned int column);
 void matrix_set(MATRIX *matrix, unsigned int row, unsigned int column,
                 double value);
+void matrix_min(MATRIX *matrix, unsigned int *row, unsigned int *column);
+void matrix_max(MATRIX *matrix, unsigned int *row, unsigned int *column);
 
 // B is the result holder
 ERROR matrix_add(MATRIX *a, MATRIX *b);
@@ -34,6 +36,8 @@ ERROR matrix_mul(MATRIX *a, MATRIX *b);
 ERROR matrix_mul_2(MATRIX *a, MATRIX *b);
 ERROR matrix_hadamard_mul(MATRIX *a, MATRIX *b);
 ERROR matrix_transpose(MATRIX *matrix);
+ERROR matrix_flatten_row(MATRIX *matrix);
+ERROR matrix_flatten_column(MATRIX *matrix);
 
 void matrix_apply(MATRIX *matrix, double (*function)(void *context, double),
                   void *context);

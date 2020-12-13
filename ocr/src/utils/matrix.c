@@ -61,6 +61,30 @@ void matrix_set(MATRIX *matrix, unsigned int row, unsigned int column,
     matrix->values[row * matrix->columns + column] = value;
 }
 
+void matrix_min(MATRIX *matrix, unsigned int *row, unsigned int *column) {
+    *row = 0;
+    *column = 0;
+    for (unsigned int i = 0; i < matrix->rows; i++)
+        for (unsigned int j = 0; j < matrix->columns; j++)
+            if (matrix->values[i * matrix->columns + j] <
+                matrix->values[*row * matrix->columns + *column]) {
+                *row = i;
+                *column = j;
+            }
+}
+
+void matrix_max(MATRIX *matrix, unsigned int *row, unsigned int *column) {
+    *row = 0;
+    *column = 0;
+    for (unsigned int i = 0; i < matrix->rows; i++)
+        for (unsigned int j = 0; j < matrix->columns; j++)
+            if (matrix->values[i * matrix->columns + j] >
+                matrix->values[*row * matrix->columns + *column]) {
+                *row = i;
+                *column = j;
+            }
+}
+
 ERROR matrix_add(MATRIX *a, MATRIX *b) {
     if (a->rows != b->rows || a->columns != b->columns) {
         char buf[128];
@@ -171,6 +195,18 @@ ERROR matrix_transpose(MATRIX *matrix) {
     unsigned int columns = matrix->columns;
     matrix->columns = matrix->rows;
     matrix->rows = columns;
+    return SUCCESS;
+}
+
+ERROR matrix_flatten_row(MATRIX *matrix) {
+    matrix->columns = matrix->rows * matrix->columns;
+    matrix->rows = 1;
+    return SUCCESS;
+}
+
+ERROR matrix_flatten_column(MATRIX *matrix) {
+    matrix->rows = matrix->rows * matrix->columns;
+    matrix->columns = 1;
     return SUCCESS;
 }
 

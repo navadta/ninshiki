@@ -5,6 +5,7 @@
 #include "images/conversions.h"
 #include "images/convolution.h"
 #include "images/image.h"
+#include "images/transformations.h"
 #include "utils/error.h"
 #include "utils/utils.h"
 
