@@ -9,6 +9,7 @@ A basic Optical Character Recognition program written in C for the third semeste
 * `git clone https://github.com/navadta/ninshiki`
 * `make`
 * All of the executable demo files will be in `./ocr/build/example/`
+* The GUI executable file will be in `./gui/build/`
 
 ## Demos
 * Images
@@ -23,6 +24,10 @@ A basic Optical Character Recognition program written in C for the third semeste
   * This demo will train a neural network to learn the Bitwise XOR function then it will output some results
   * `./ocr/build/example/xor_network activation_function` (`./ocr/build/example/xor_network 1`)
   * `1` to use the Sigmoid activation function and `2` for ELU (Exponential Linear Unit)
+
+## GUI
+* This demo will open a GUI with multiple functionalities to recognize the text from an image
+* Run the GUI with `./gui/build/gui`
 
 ## Navadta Members:
 ##### - [Alan GUERET](https://github.com/alanretgue)

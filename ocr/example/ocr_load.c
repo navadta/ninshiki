@@ -82,59 +82,20 @@ double sigmoid_prime(void *context, double value) {
     return sigmoid(context, value) * (1 - sigmoid(context, value));
 }
 
-ERROR test(NETWORK *network, const char *path) {
-    ERROR err = SUCCESS;
-
-    MATRIX input;
-
-    IMAGE *image;
-    err_throw_msg(err, image_load(&image, path), "Couldn't load image");
-    err_throw(err, image_scale(image, 32, 32));
-    float threshold = 0.5f;
-    err_throw(err,
-              image_to_binary(image, basic_threshold, (void *) &threshold));
-    err_throw(err, image_to_matrix(image, &input));
-    err_throw(err, matrix_flatten_column(&input));
-
-    image_free(image);
-
-    MATRIX output;
-    network_feedforward(network, NULL, &input, &output);
-
-    unsigned int row = 0;
-    unsigned int column = 0;
-    matrix_max(&output, &row, &column);
-
-    printf("OUTPUT: %c (probability %f)\n\n", CHARSET[row],
-           matrix_get(&output, row, column));
-
-    matrix_free(&output);
-    matrix_free(&input);
-
-    return err;
-}
-
 ERROR program(const char *path, unsigned long activation) {
     ERROR err = SUCCESS;
 
-    printf("Activation Function: %s\n",
-           activation == 1 ? "Sigmoid\n" : "ELU (Exponential Linear Unit)\n");
     printf("Initializing random...\n\n");
     srand(time(NULL));
 
     NETWORK network;
-    /*err_throw(err, network_create(&network, activation == 1 ? sigmoid : elu,
-                                  activation == 1 ? sigmoid_prime :
-       elu_prime));*/
-
-    FILE *net = fopen("network.txt", "r");
+    FILE *net = fopen("network", "r");
     network_load(net, &network);
     network.activation_function = activation == 1 ? sigmoid : elu;
     network.activation_function_derivative =
         activation == 1 ? sigmoid_prime : elu_prime;
     fclose(net);
 
-    // unsigned int samples = 400;
     unsigned int samples = 1;
     char *fonts[] = {"arial_rotated.bmp", "nunito.png", "roboto.png"};
 
@@ -169,15 +130,11 @@ ERROR program(const char *path, unsigned long activation) {
     }
 
     printf("Training...\n\n");
-    double alpha = 0.1;
-    /*err_throw(err, network_train(&network, (void *) &alpha, (void *) &alpha,
-                                 10000, 0.01, 5.0, 100,
-                                 CHARSET_LENGTH * samples, inputs, expected));*/
 
     MATRIX *output = malloc(sizeof(MATRIX));
     for (unsigned int j = 0; j < CHARSET_LENGTH * samples; j++) {
         if (j > 0) matrix_free(output);
-        network_feedforward(&network, (void *) &alpha, inputs + j, output);
+        network_feedforward(&network, NULL, inputs + j, output);
 
         unsigned int erow = 0;
         unsigned int ecolumn = 0;
@@ -194,14 +151,8 @@ ERROR program(const char *path, unsigned long activation) {
             matrix_get(output, row, column), row, column);
     }
 
-    /*FILE *before = fopen("network.txt", "a");
-    network_save(before, &network);
-    fclose(before);*/
-
     matrix_free(output);
     free(output);
-
-    test(&network, "./resources/A.bmp");
 
     for (unsigned int i = 0; i < CHARSET_LENGTH * samples; i++) {
         matrix_free(&inputs[i]);
@@ -218,7 +169,7 @@ ERROR program(const char *path, unsigned long activation) {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 3) {
+    if (argc < 2) {
         printf(
             "You need to precise an activation function:\n - 1 for Sigmoid\n - "
             "2 for ELU (Exponential Linear Unit)\nAnd the dataset path for "

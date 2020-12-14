@@ -102,8 +102,8 @@ ERROR program(const char *path, const char *name) {
     double angle = image_skew_angle(image);
     image_rotate(image, -angle);
 
-    // err_throw(err, image_to_grayscale(image));
-    // err_throw(err, image_to_rgb(image));
+    err_throw(err, image_to_grayscale(image));
+    err_throw(err, image_to_rgb(image));
     err_throw(err, save_to_bitmap(image, concat2(path, "grayscaled.bmp")));
 
     float wide_gauss[5][5] = {
