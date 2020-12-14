@@ -1,10 +1,21 @@
 #include <gtk/gtk.h>
+#include <math.h>
 #include <nn/neural_network.h>
 #include <stdio.h>
 
 #include "basic.h"
 #include "ocr.h"
 #include "struct.h"
+
+double sigmoid(void *context, double value) {
+    (void) context;
+    return 1.0 / (1.0 + exp(-value));
+}
+
+double sigmoid_prime(void *context, double value) {
+    (void) context;
+    return sigmoid(context, value) * (1 - sigmoid(context, value));
+}
 
 int main() {
     // Initializes GTK.
@@ -43,6 +54,9 @@ int main() {
 
     GtkTextView *text_panel =
         GTK_TEXT_VIEW(gtk_builder_get_object(builder, "text_panel"));
+    GtkTextView *text_panel_2 =
+        GTK_TEXT_VIEW(gtk_builder_get_object(builder, "text_panel_2"));
+
     GtkImage *image_panel =
         GTK_IMAGE(gtk_builder_get_object(builder, "image_panel"));
     GtkScale *rotation_scale =
@@ -62,6 +76,7 @@ int main() {
                 .training_button = training_button,
                 .rotation_button = rotation_button,
                 .text_panel = text_panel,
+                .text_panel_2 = text_panel_2,
                 .image_panel = image_panel,
                 .image_x =
                     gtk_widget_get_allocated_width(GTK_WIDGET(image_panel)),
@@ -72,9 +87,11 @@ int main() {
         .image = NULL,
     };
 
-    // FILE *network_file = fopen("resources/network", "r");
-    // network_load(network_file, &network);
-    // fclose(network_file);
+    FILE *network_file = fopen("resources/network", "r");
+    network_load(network_file, &(app.network));
+    fclose(network_file);
+    app.network.activation_function = sigmoid;
+    app.network.activation_function_derivative = sigmoid_prime;
 
     g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
     g_signal_connect(image_button, "clicked", G_CALLBACK(select_image), &app);

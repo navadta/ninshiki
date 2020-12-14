@@ -1,6 +1,7 @@
 #include "basic.h"
 
 #include <gtk/gtk.h>
+#include <images/conversions.h>
 #include <images/image.h>
 #include <images/transformations.h>
 #include <math.h>
@@ -10,9 +11,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <utils/utils.h>
 
 #include "ocr.h"
+#include "read_text.h"
 #include "struct.h"
+
+#define CHARSET                  \
+    "0123456789"                 \
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+    "abcdefghijklmnopqrstuvwxyz" \
+    "-.,?"
+#define CHARSET_LENGTH 66
 
 void about(GtkButton *button, gpointer user_data) {
     (void) button;
@@ -91,13 +101,9 @@ void start(GtkButton *button, gpointer user_data) {
     (void) button;
     App *app = user_data;
 
-    gtk_widget_set_sensitive((GtkWidget *) app->ui.image_button, FALSE);
-    gtk_widget_set_sensitive((GtkWidget *) app->ui.save_button, FALSE);
-
-    // TODO lancer le programme de lecture de l'image
-
-    gtk_widget_set_sensitive((GtkWidget *) app->ui.image_button, TRUE);
-    gtk_widget_set_sensitive((GtkWidget *) app->ui.save_button, TRUE);
+    if (read_text(app) != SUCCESS)
+        display_error(app, "an error has occurred during the reading",
+                      "Check if the image is valid");
 }
 
 void save(GtkButton *button, gpointer user_data) {
@@ -171,26 +177,67 @@ void train_network(GtkButton *button, gpointer user_data) {
     App *app = user_data;
 
     GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
-    GtkWidget *error = gtk_message_dialog_new(
-        app->ui.window, flags, GTK_MESSAGE_INFO, GTK_BUTTONS_YES_NO,
-        "You can train a new network or train the current network");
+    GtkWidget *msg = gtk_message_dialog_new(
+        app->ui.window, flags, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+        "You can train a new network. This action will delete the current "
+        "network.");
 
-    gtk_message_dialog_format_secondary_text(
-        (GtkMessageDialog *) error,
-        "Push 'YES' to train a new one, push 'NO' to train the current one");
+    gtk_message_dialog_format_secondary_text((GtkMessageDialog *) msg,
+                                             "Are you sure to do this ?");
 
-    int result = gtk_dialog_run((GtkDialog *) error);
-    if (result == GTK_RESPONSE_YES) {
-        gtk_widget_destroy(error);
+    int result = gtk_dialog_run((GtkDialog *) msg);
+    if (result == GTK_RESPONSE_OK) {
+        gtk_widget_destroy(msg);
+
+        srand(time(NULL));
+        for (unsigned int i = 0; i < app->network.layers_count; i++) {
+            layer_free(app->network.layers + i);
+            layer_init_random(app->network.layers + i,
+                              (app->network.layers + i)->inputs,
+                              (app->network.layers + i)->outputs);
+        }
+
+        char *fonts[] = {"arial.png", "nunito.png", "roboto.png"};
+        unsigned int samples = 3;
+
+        MATRIX *inputs = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
+        MATRIX *expected = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
+        printf("Loading dataset...\n\n");
+        for (unsigned int i = 0; i < CHARSET_LENGTH; i++) {
+            char character = CHARSET[i];
+            unsigned char position = char_index(character);
+            for (unsigned int j = 0; j < samples; j++) {
+                unsigned int index = i * samples + j;
+                char *font = fonts[j];
+
+                char p[1024];
+                snprintf(p, 1024, "resources/dataset/%s_%d.bmp", font,
+                         position);
+
+                IMAGE *image;
+
+                image_load(&image, p);
+                image_scale(image, 32, 32);
+                float threshold = 0.5f;
+
+                image_to_binary(image, basic_threshold, (void *) &threshold);
+                image_to_matrix(image, inputs + index);
+                matrix_flatten_column(inputs + index);
+
+                image_free(image);
+
+                char_to_matrix(character, expected + index);
+            }
+            printf("Loaded %i/%i\n", i + 1, CHARSET_LENGTH);
+        }
+
+        network_train(&(app->network), NULL, NULL, 3000, 0.1, 5.0, 30,
+                      CHARSET_LENGTH * samples, inputs, expected);
+        printf("finished\n");
+
         // NETWORK network_new;
         // créer des layers et les initialiser avec layer_init_random()
 
-    }
-
-    else if (result == GTK_RESPONSE_NO) {
-        gtk_widget_destroy(error);
-    }
-
-    else
-        gtk_widget_destroy(error);
+    } else
+        gtk_widget_destroy(msg);
 }

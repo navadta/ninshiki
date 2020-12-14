@@ -14,4 +14,6 @@ ERROR image_scale(IMAGE *image, unsigned int width, unsigned int height);
 ERROR image_sub(IMAGE *image, IMAGE **sub, unsigned int x, unsigned int y,
                 unsigned int width, unsigned int height);
 
+ERROR image_fill(IMAGE *image, unsigned int width, unsigned int height);
+
 #endif

@@ -14,6 +14,7 @@ typedef struct ui {
     GtkButton *rotation_button;
     GtkButton *training_button;
     GtkTextView *text_panel;
+    GtkTextView *text_panel_2;
     GtkImage *image_panel;
     gint image_x;
     gint image_y;
