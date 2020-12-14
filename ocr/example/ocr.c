@@ -153,7 +153,7 @@ ERROR program(const char *path, unsigned long activation) {
             matrix_get(output, row, column), row, column);
     }
 
-    FILE *before = fopen("network.txt", "a");
+    FILE *before = fopen("network", "a");
     network_save(before, &network);
     fclose(before);
 

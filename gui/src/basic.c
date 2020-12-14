@@ -17,13 +17,6 @@
 #include "read_text.h"
 #include "struct.h"
 
-#define CHARSET                  \
-    "0123456789"                 \
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-    "abcdefghijklmnopqrstuvwxyz" \
-    "-.,?"
-#define CHARSET_LENGTH 66
-
 void about(GtkButton *button, gpointer user_data) {
     (void) button;
     App *app = user_data;
@@ -235,11 +228,15 @@ void train_network(GtkButton *button, gpointer user_data) {
 
         network_train(&(app->network), NULL, NULL, 3000, 0.1, 5.0, 30,
                       CHARSET_LENGTH * samples, inputs, expected);
-        printf("finished\n");
 
-        // NETWORK network_new;
-        // créer des layers et les initialiser avec layer_init_random()
+        printf("Finished\n");
+        msg = gtk_message_dialog_new(app->ui.window, flags, GTK_MESSAGE_INFO,
+                                     GTK_BUTTONS_OK, "Finished.");
 
+        result = gtk_dialog_run((GtkDialog *) msg);
+        if (result == GTK_RESPONSE_OK) {
+            gtk_widget_destroy(msg);
+        }
     } else
         gtk_widget_destroy(msg);
 }

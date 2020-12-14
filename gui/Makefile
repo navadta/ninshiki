@@ -27,7 +27,6 @@ test-format:
 	$(FMT) $(FMT_FLAGS) --dry-run $(SRC)
 
 compile: $(OBJ)
-	cp -r $(RESOURCES_DIR) $(BUILD_DIR)
 	$(CC) -o $(BUILD_DIR)/$(NAME) $(OBJ) $(LDFLAGS)
 
 $(BUILD_DIR)/$(SANDBOX_DIR)/%.o: $(SRC_DIR)/%.c
