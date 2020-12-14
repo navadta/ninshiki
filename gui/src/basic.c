@@ -30,7 +30,7 @@ void about(GtkButton *button, gpointer user_data) {
     GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
     GtkWidget *error = gtk_message_dialog_new(
         app->ui.window, flags, GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
-        "This is the about section, we have to write a text");
+        "This application has been created by Epita students");
 
     gtk_message_dialog_format_secondary_text(
         (GtkMessageDialog *) error, "Thank you for using our app ! <3");
@@ -100,6 +100,8 @@ void select_image(GtkButton *button, gpointer user_data) {
 void start(GtkButton *button, gpointer user_data) {
     (void) button;
     App *app = user_data;
+
+    if (app->image == NULL) return;
 
     if (read_text(app) != SUCCESS)
         display_error(app, "an error has occurred during the reading",
