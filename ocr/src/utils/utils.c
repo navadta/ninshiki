@@ -28,7 +28,7 @@ const char *concat3(const char *s1, const char *s2, const char *s3) {
 
 unsigned char char_index(char c) {
     char *charset =
-        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-.,?";
     unsigned char position = 0;
     while (charset[position] != c && charset[position] != '\0') position++;
     return position;
@@ -37,8 +37,8 @@ unsigned char char_index(char c) {
 ERROR char_to_matrix(char c, MATRIX *matrix) {
     ERROR err = SUCCESS;
     unsigned char position = char_index(c);
-    if (position >= 62) return NOT_HANDLED;
-    err_throw(err, matrix_init(matrix, 62, 1, NULL, NULL));
+    if (position >= 66) return NOT_HANDLED;
+    err_throw(err, matrix_init(matrix, 66, 1, NULL, NULL));
     matrix_set(matrix, position, 0, 1.0d);
     return err;
 }
