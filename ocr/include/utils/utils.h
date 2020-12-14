@@ -7,6 +7,13 @@
     if (resource != NULL) func(resource); \
     resource = NULL;
 
+#define CHARSET                  \
+    "0123456789"                 \
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+    "abcdefghijklmnopqrstuvwxyz" \
+    "-.,?"
+#define CHARSET_LENGTH 66
+
 const char *concat2(const char *s1, const char *s2);
 const char *concat3(const char *s1, const char *s2, const char *s3);
 

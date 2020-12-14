@@ -14,12 +14,6 @@
 #include "utils/matrix.h"
 #include "utils/utils.h"
 
-#define CHARSET                  \
-    "0123456789"                 \
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-    "abcdefghijklmnopqrstuvwxyz"
-#define CHARSET_LENGTH 62
-
 ERROR image_load(IMAGE **image, char *path) {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(path, NULL);
     if (pixbuf == NULL) return IO_ERROR;
@@ -57,14 +51,13 @@ ERROR image_load(IMAGE **image, char *path) {
 ERROR network_create(NETWORK *network,
                      double (*activation_function)(void *, double),
                      double (*activation_function_derivative)(void *, double)) {
-    LAYER *layers = malloc(4 * sizeof(LAYER));
+    LAYER *layers = malloc(3 * sizeof(LAYER));
 
     layer_init_random(layers, 32 * 32, 32 * 32);
-    layer_init_random(layers + 1, 32 * 32, 100);
-    layer_init_random(layers + 2, 100, 30);
-    layer_init_random(layers + 3, 30, CHARSET_LENGTH);
+    layer_init_random(layers + 1, 32 * 32, 60);
+    layer_init_random(layers + 2, 60, CHARSET_LENGTH);
 
-    network_init(network, layers, 4, activation_function,
+    network_init(network, layers, 3, activation_function,
                  activation_function_derivative);
     return SUCCESS;
 }
@@ -101,7 +94,8 @@ ERROR program(const char *path, unsigned long activation) {
     err_throw(err, network_create(&network, activation == 1 ? sigmoid : elu,
                                   activation == 1 ? sigmoid_prime : elu_prime));
 
-    unsigned int samples = 800;
+    char *fonts[] = {"arial.png", "nunito.png", "roboto.png"};
+    unsigned int samples = 3;
 
     MATRIX *inputs = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
     MATRIX *expected = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
@@ -111,10 +105,10 @@ ERROR program(const char *path, unsigned long activation) {
         unsigned char position = char_index(character);
         for (unsigned int j = 0; j < samples; j++) {
             unsigned int index = i * samples + j;
+            char *font = fonts[j];
 
             char p[1024];
-            snprintf(p, 1024, "%s/Sample%03d/img%03d-%05d.png", path,
-                     position + 1, position + 1, j + 1);
+            snprintf(p, 1024, "%s/%s_%d.bmp", path, font, position);
 
             IMAGE *image;
 
@@ -136,8 +130,8 @@ ERROR program(const char *path, unsigned long activation) {
     printf("Training...\n\n");
     double alpha = 0.1;
     err_throw(err, network_train(&network, (void *) &alpha, (void *) &alpha,
-                                 100000, 0.01, 5.0, 100,
-                                 CHARSET_LENGTH * samples, inputs, expected));
+                                 10000, 0.01, 0.0, 50, CHARSET_LENGTH * samples,
+                                 inputs, expected));
 
     MATRIX *output = malloc(sizeof(MATRIX));
     for (unsigned int j = samples * 4 + 43; j < samples * 4 + 47; j++) {

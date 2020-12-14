@@ -2,7 +2,7 @@
 NAME := ocr
 CC := gcc
 CFLAGS := -Werror -Wall -Wextra -std=c99 -O3 # -g
-LDFLAGS := -Iinclude/ -lm
+LDFLAGS := -Iinclude/
 C_SRC := $(shell find src/ -name *.c -printf "%P\n")
 SRC := $(shell find -name *.c) $(shell find -name *.h)
 SRC_DIR := src
@@ -18,7 +18,7 @@ EXAMPLES := $(shell find $(EXAMPLE_DIR)/ -name *.c -printf "%P\n")
 
 all: mrproper format $(EXAMPLES)
 
-check: compile test-format
+check: $(EXAMPLES) # test-format
 
 format:
 	$(FMT) $(FMT_FLAGS) -i $(SRC)
@@ -35,7 +35,7 @@ $(BUILD_DIR)/$(SANDBOX_DIR)/%.o: $(SRC_DIR)/%.c
 
 $(EXAMPLES): compile
 	mkdir -p $(BUILD_DIR)/$(EXAMPLE_DIR)
-	$(CC) $(CFLAGS) `pkg-config --cflags gtk+-3.0` -o $(BUILD_DIR)/$(EXAMPLE_DIR)/$(@:.c=) $(EXAMPLE_DIR)/$@ $(LDFLAGS) `pkg-config --libs gtk+-3.0` -L$(BUILD_DIR) -l$(NAME)
+	$(CC) $(CFLAGS) `pkg-config --cflags gtk+-3.0` -o $(BUILD_DIR)/$(EXAMPLE_DIR)/$(@:.c=) $(EXAMPLE_DIR)/$@ $(LDFLAGS) `pkg-config --libs gtk+-3.0` -L$(BUILD_DIR) -l$(NAME) -lm
 
 mrproper:
 	rm -rf $(BUILD_DIR)

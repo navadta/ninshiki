@@ -14,13 +14,7 @@
 #include "utils/matrix.h"
 #include "utils/utils.h"
 
-#define CHARSET                  \
-    "0123456789"                 \
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-    "abcdefghijklmnopqrstuvwxyz"
-#define CHARSET_LENGTH 62
-
-ERROR image_load(IMAGE **image, char *path) {
+ERROR image_load(IMAGE **image, const char *path) {
     GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file(path, NULL);
     if (pixbuf == NULL) return IO_ERROR;
     *image = malloc(sizeof(IMAGE));
@@ -60,8 +54,8 @@ ERROR network_create(NETWORK *network,
     LAYER *layers = malloc(3 * sizeof(LAYER));
 
     layer_init_random(layers, 32 * 32, 32 * 32);
-    layer_init_random(layers + 1, 32 * 32, 30);
-    layer_init_random(layers + 2, 30, CHARSET_LENGTH);
+    layer_init_random(layers + 1, 32 * 32, 60);
+    layer_init_random(layers + 2, 60, CHARSET_LENGTH);
 
     network_init(network, layers, 3, activation_function,
                  activation_function_derivative);
@@ -88,6 +82,38 @@ double sigmoid_prime(void *context, double value) {
     return sigmoid(context, value) * (1 - sigmoid(context, value));
 }
 
+ERROR test(NETWORK *network, const char *path) {
+    ERROR err = SUCCESS;
+
+    MATRIX input;
+
+    IMAGE *image;
+    err_throw_msg(err, image_load(&image, path), "Couldn't load image");
+    err_throw(err, image_scale(image, 32, 32));
+    float threshold = 0.5f;
+    err_throw(err,
+              image_to_binary(image, basic_threshold, (void *) &threshold));
+    err_throw(err, image_to_matrix(image, &input));
+    err_throw(err, matrix_flatten_column(&input));
+
+    image_free(image);
+
+    MATRIX output;
+    network_feedforward(network, NULL, &input, &output);
+
+    unsigned int row = 0;
+    unsigned int column = 0;
+    matrix_max(&output, &row, &column);
+
+    printf("OUTPUT: %c (probability %f)\n\n", CHARSET[row],
+           matrix_get(&output, row, column));
+
+    matrix_free(&output);
+    matrix_free(&input);
+
+    return err;
+}
+
 ERROR program(const char *path, unsigned long activation) {
     ERROR err = SUCCESS;
 
@@ -110,6 +136,7 @@ ERROR program(const char *path, unsigned long activation) {
 
     // unsigned int samples = 400;
     unsigned int samples = 1;
+    char *fonts[] = {"arial_rotated.bmp", "nunito.png", "roboto.png"};
 
     MATRIX *inputs = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
     MATRIX *expected = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
@@ -119,10 +146,10 @@ ERROR program(const char *path, unsigned long activation) {
         unsigned char position = char_index(character);
         for (unsigned int j = 0; j < samples; j++) {
             unsigned int index = i * samples + j;
+            char *font = fonts[j];
 
             char p[1024];
-            snprintf(p, 1024, "%s/Sample%03d/img%03d-%05d.png", path,
-                     position + 1, position + 1, j + 1);
+            snprintf(p, 1024, "%s/%s_%d.bmp", path, font, position);
 
             IMAGE *image;
 
@@ -142,7 +169,7 @@ ERROR program(const char *path, unsigned long activation) {
     }
 
     printf("Training...\n\n");
-    double alpha = 1.0;
+    double alpha = 0.1;
     /*err_throw(err, network_train(&network, (void *) &alpha, (void *) &alpha,
                                  10000, 0.01, 5.0, 100,
                                  CHARSET_LENGTH * samples, inputs, expected));*/
@@ -173,6 +200,8 @@ ERROR program(const char *path, unsigned long activation) {
 
     matrix_free(output);
     free(output);
+
+    test(&network, "./resources/A.bmp");
 
     for (unsigned int i = 0; i < CHARSET_LENGTH * samples; i++) {
         matrix_free(&inputs[i]);
