@@ -15,5 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install xmllint
+      run: sudo apt-get install gtk+-3.0 libhunspell-dev
     - name: test
       run: cd ocr && make check
