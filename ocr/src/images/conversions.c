@@ -5,6 +5,7 @@
 #include "images/colors.h"
 #include "images/image.h"
 #include "utils/error.h"
+#include "utils/matrix.h"
 #include "utils/utils.h"
 
 ERROR image_to_grayscale(IMAGE *image) {
@@ -33,8 +34,9 @@ ERROR image_to_grayscale(IMAGE *image) {
                 grayscale = 0.f;
                 break;
         }
-        pixels[i].grayscale =
-            grayscale < 0.f ? 0.f : grayscale > 1.f ? 1.f : grayscale;
+        pixels[i].grayscale = grayscale < 0.f   ? 0.f
+                              : grayscale > 1.f ? 1.f
+                                                : grayscale;
     }
 
     switch (image->type) {
@@ -141,4 +143,18 @@ ERROR image_to_binary(IMAGE *image,
     image->pixels.binary = pixels;
 
     return SUCCESS;
+}
+
+double matrix_from_image(void *context, unsigned int row, unsigned int column) {
+    IMAGE *image = (IMAGE *) context;
+    return (double) (image->pixels.binary + row * image->width + column)
+        ->binary;
+}
+
+ERROR image_to_matrix(IMAGE *image, MATRIX *matrix) {
+    ERROR err = SUCCESS;
+    if (image->type != COLOR_BINARY) return NOT_HANDLED;
+    err_throw(err, matrix_init(matrix, image->height, image->width,
+                               matrix_from_image, (void *) image));
+    return err;
 }
