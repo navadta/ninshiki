@@ -170,11 +170,23 @@ ERROR program(const char *path, unsigned long activation) {
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("You need to precise a path for the dataset\n");
+        printf(
+            "You need to precise an activation function:\n - 1 for Sigmoid\n - "
+            "2 for ELU (Exponential Linear Unit)\nAnd the dataset path for "
+            "training\n");
         return 1;
     }
 
-    ERROR err = program(argv[1]);
+    unsigned long param = strtoul(argv[1], NULL, 10);
+
+    if (param != 1 && param != 2) {
+        printf(
+            "You need to precise an activation function:\n - 1 for Sigmoid\n - "
+            "2 for ELU (Exponential Linear Unit)\n");
+        return 1;
+    }
+
+    ERROR err = program(argv[2], param);
     printf("%s\n", format_last_error(err));
 
     return err;
