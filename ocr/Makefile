@@ -18,7 +18,7 @@ EXAMPLES := $(shell find $(EXAMPLE_DIR)/ -name *.c -printf "%P\n")
 
 all: mrproper format $(EXAMPLES)
 
-check: compile test-format
+check: $(EXAMPLES) # test-format
 
 format:
 	$(FMT) $(FMT_FLAGS) -i $(SRC)
