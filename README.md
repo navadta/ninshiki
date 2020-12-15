@@ -8,7 +8,7 @@ A basic Optical Character Recognition program written in C for the third semeste
 ## Build
 * `git clone https://github.com/navadta/ninshiki`
 * `make`
-* If you want to train a neural network with the `./ocr/build/example/ocr` example, you will need to
+* If you want to train a neural network with the `./ocr/build/example/ocr` example or in the GUI, you will need to
 generate a dataset, for this, run `./ocr/build/example/generate_dataset ./resources/dataset <image>` by
 replacing image with the 3 fonts images present in the dataset folder.
   * `./ocr/build/example/generate_dataset ./resources/dataset arial.png`
