@@ -8,6 +8,12 @@ A basic Optical Character Recognition program written in C for the third semeste
 ## Build
 * `git clone https://github.com/navadta/ninshiki`
 * `make`
+* If you want to train a neural network with the `./ocr/build/example/ocr` example, you will need to
+generate a dataset, for this, run `./ocr/build/example/generate_dataset ./resources/dataset <image>` by
+replacing image with the 3 fonts images present in the dataset folder.
+  * `./ocr/build/example/generate_dataset ./resources/dataset arial.png`
+  * `./ocr/build/example/generate_dataset ./resources/dataset nunito.png`
+  * `./ocr/build/example/generate_dataset ./resources/dataset roboto.png`
 * All of the executable demo files will be in `./ocr/build/example/`
 * The GUI executable file will be in `./gui/build/`
 
@@ -24,6 +30,10 @@ A basic Optical Character Recognition program written in C for the third semeste
   * This demo will train a neural network to learn the Bitwise XOR function then it will output some results
   * `./ocr/build/example/xor_network activation_function` (`./ocr/build/example/xor_network 1`)
   * `1` to use the Sigmoid activation function and `2` for ELU (Exponential Linear Unit)
+* Dataset Generation
+  * This demo will generate a dataset as explained in the `Build` section
+* OCR Training
+  * This demo will train a neural network capable of recognizing characters
 
 ## GUI
 * This demo will open a GUI with multiple functionalities to recognize the text from an image
