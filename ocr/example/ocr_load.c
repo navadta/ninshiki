@@ -89,7 +89,7 @@ ERROR program(const char *path, unsigned long activation) {
     srand(time(NULL));
 
     NETWORK network;
-    FILE *net = fopen("network", "r");
+    FILE *net = fopen("resources/network", "r");
     network_load(net, &network);
     network.activation_function = activation == 1 ? sigmoid : elu;
     network.activation_function_derivative =
@@ -97,7 +97,7 @@ ERROR program(const char *path, unsigned long activation) {
     fclose(net);
 
     unsigned int samples = 1;
-    char *fonts[] = {"arial_rotated.bmp", "nunito.png", "roboto.png"};
+    char *fonts[] = {"arial.png", "nunito.png", "roboto.png"};
 
     MATRIX *inputs = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
     MATRIX *expected = malloc(CHARSET_LENGTH * samples * sizeof(MATRIX));
@@ -129,7 +129,7 @@ ERROR program(const char *path, unsigned long activation) {
         printf("Loaded %i/%i\n", i + 1, CHARSET_LENGTH);
     }
 
-    printf("Training...\n\n");
+    printf("Feeding network...\n\n");
 
     MATRIX *output = malloc(sizeof(MATRIX));
     for (unsigned int j = 0; j < CHARSET_LENGTH * samples; j++) {

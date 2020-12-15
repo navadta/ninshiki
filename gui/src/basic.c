@@ -71,6 +71,7 @@ void select_image(GtkButton *button, gpointer user_data) {
         }
 
         double angle = image_skew_angle(app->image);
+        if ((int) angle < 0) angle = 360.0d - angle;
         gtk_range_set_value((GtkRange *) app->ui.rotation_scale, (int) angle);
 
         IMAGE *clone;
